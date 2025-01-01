@@ -11,6 +11,8 @@ import torch
 from einops import rearrange
 
 from model.base import BaseModule
+import matplotlib.pyplot as plt
+
 
 
 class Mish(BaseModule):
@@ -255,6 +257,8 @@ class Diffusion(BaseModule):
     def reverse_diffusion(self, z, mask, mu, n_timesteps, stoc=False, spk=None):
         h = 1.0 / n_timesteps
         xt = z * mask
+        xt_list=[]
+        loss_list=[]
         for i in range(n_timesteps):
             t = (1.0 - (i + 0.5)*h) * torch.ones(z.shape[0], dtype=z.dtype, 
                                                  device=z.device)
@@ -272,7 +276,10 @@ class Diffusion(BaseModule):
                 dxt = 0.5 * (mu - xt - self.estimator(xt, mask, mu, t, spk))
                 dxt = dxt * noise_t * h
             xt = (xt - dxt) * mask
-        return xt
+            xt_list.append(xt)
+            loss_list.append(self.compute_loss(xt, mask, mu, spk))
+
+        return xt, xt_list, loss_list
 
     @torch.no_grad()
     def forward(self, z, mask, mu, n_timesteps, stoc=False, spk=None):

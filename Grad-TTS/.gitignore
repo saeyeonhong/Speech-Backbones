@@ -1,0 +1,8 @@
+../.DS_Store
+.DS_Store
+__pycache__/
+text/__pycache__/
+hifi-gan/__pycache__/
+model/__pycache__/
+model/monotonic_align/__pycache__/
+model/monotonic_align/model/
